@@ -70,7 +70,10 @@ type FailedRequest = {
 
 let failedQueue: FailedRequest[] = [];
 
-const processQueue = (error: unknown, token: string | null = null): void => {
+const processQueue = (
+  error: unknown,
+  token: string | null = null,
+): void => {
   failedQueue.forEach(({ resolve, reject }) => {
     if (error) {
       reject(error);
@@ -148,6 +151,38 @@ api.interceptors.response.use(
   },
 );
 
+const extractErrorMessage = (value: unknown): string | null => {
+  if (Array.isArray(value)) {
+    for (const item of value) {
+      const message = extractErrorMessage(item);
+
+      if (message) {
+        return message;
+      }
+    }
+
+    return null;
+  }
+
+  if (typeof value === "string" && value.trim()) {
+    return value;
+  }
+
+  if (value && typeof value === "object") {
+    const objectValue = value as Record<string, unknown>;
+
+    for (const nestedValue of Object.values(objectValue)) {
+      const message = extractErrorMessage(nestedValue);
+
+      if (message) {
+        return message;
+      }
+    }
+  }
+
+  return null;
+};
+
 export const getApiErrorMessage = (
   error: unknown,
   fallback = "Something went wrong. Please try again.",
@@ -155,20 +190,16 @@ export const getApiErrorMessage = (
   if (axios.isAxiosError<ApiErrorResponse>(error)) {
     const response = error.response?.data;
 
-    if (response?.message) {
-      return response.message;
+    if (response?.errors) {
+      const errorMessage = extractErrorMessage(response.errors);
+
+      if (errorMessage) {
+        return errorMessage;
+      }
     }
 
-    if (response?.errors) {
-      const firstError = Object.values(response.errors)[0];
-
-      if (Array.isArray(firstError) && firstError.length > 0) {
-        return String(firstError[0]);
-      }
-
-      if (typeof firstError === "string") {
-        return firstError;
-      }
+    if (response?.message) {
+      return response.message;
     }
   }
 
