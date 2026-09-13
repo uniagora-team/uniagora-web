@@ -18,6 +18,7 @@ import { AuthContext } from "./AuthContext";
 import type {
   LoginPayload,
   RegisterPayload,
+  SetActiveUniversityPayload,
   User,
 } from "../types/auth";
 
@@ -33,9 +34,9 @@ export function AuthProvider({
   const [error, setError] = useState<string | null>(null);
 
   const refreshUser = useCallback(async (): Promise<User | null> => {
-    const accessToken = getAccessToken();
+    const accessTokenAtStart = getAccessToken();
 
-    if (!accessToken) {
+    if (!accessTokenAtStart) {
       setUser(null);
       return null;
     }
@@ -43,10 +44,18 @@ export function AuthProvider({
     try {
       const currentUser = await authService.getCurrentUser();
 
+      if (getAccessToken() !== accessTokenAtStart) {
+        return null;
+      }
+
       setUser(currentUser);
 
       return currentUser;
     } catch (requestError) {
+      if (getAccessToken() !== accessTokenAtStart) {
+        return null;
+      }
+
       clearTokens();
       setUser(null);
 
@@ -62,15 +71,21 @@ export function AuthProvider({
   }, []);
 
   useEffect(() => {
-    const initializeAuth = async () => {
-      setIsLoading(true);
+    let isMounted = true;
 
+    const initializeAuth = async () => {
       await refreshUser();
 
-      setIsLoading(false);
+      if (isMounted) {
+        setIsLoading(false);
+      }
     };
 
     void initializeAuth();
+
+    return () => {
+      isMounted = false;
+    };
   }, [refreshUser]);
 
   const login = useCallback(
@@ -127,6 +142,36 @@ export function AuthProvider({
     [],
   );
 
+  const setActiveUniversity = useCallback(
+    async (
+      payload: SetActiveUniversityPayload,
+    ): Promise<User> => {
+      setIsLoading(true);
+      setError(null);
+
+      try {
+        const updatedUser =
+          await authService.setActiveUniversity(payload);
+
+        setUser(updatedUser);
+
+        return updatedUser;
+      } catch (requestError) {
+        const message = getApiErrorMessage(
+          requestError,
+          "Unable to update your university. Please try again.",
+        );
+
+        setError(message);
+
+        throw requestError;
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    [],
+  );
+
   const logout = useCallback(async (): Promise<void> => {
     setIsLoading(true);
     setError(null);
@@ -161,6 +206,7 @@ export function AuthProvider({
       register,
       logout,
       refreshUser,
+      setActiveUniversity,
       clearError,
     }),
     [
@@ -171,6 +217,7 @@ export function AuthProvider({
       register,
       logout,
       refreshUser,
+      setActiveUniversity,
       clearError,
     ],
   );

@@ -1,11 +1,16 @@
 export interface University {
-  id: number;
+  id: string;
   name: string;
+  short_name: string;
   slug: string;
+  logo: string | null;
+  is_active: boolean;
+  created_at: string;
+  updated_at: string;
 }
 
 export interface User {
-  id: number;
+  id: string;
   email: string;
   full_name: string;
   phone_number: string;

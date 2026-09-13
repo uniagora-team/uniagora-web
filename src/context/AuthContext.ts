@@ -3,6 +3,7 @@ import { createContext } from "react";
 import type {
   LoginPayload,
   RegisterPayload,
+  SetActiveUniversityPayload,
   User,
 } from "../types/auth";
 
@@ -15,6 +16,9 @@ export interface AuthContextValue {
   register: (payload: RegisterPayload) => Promise<User>;
   logout: () => Promise<void>;
   refreshUser: () => Promise<User | null>;
+  setActiveUniversity: (
+    payload: SetActiveUniversityPayload,
+  ) => Promise<User>;
   clearError: () => void;
 }
 
