@@ -9,9 +9,10 @@ import LoginPage from "../pages/LoginPage";
 import PasswordResetPage from "../pages/PasswordResetPage";
 import RegisterPage from "../pages/RegisterPage";
 import ResetPasswordPage from "../pages/ResetPasswordPage";
+import StoreDetailPage from "../pages/StoreDetailPage";
+import VendorApplicationPage from "../pages/VendorApplicationPage";
 import ProtectedRoute from "./ProtectedRoute";
 import PublicRoute from "./PublicRoute";
-import StoreDetailPage from "../pages/StoreDetailPage";
 
 export default function AppRoutes() {
   return (
@@ -52,6 +53,11 @@ export default function AppRoutes() {
         <Route
           path="/chat/:id"
           element={<ChatPage />}
+        />
+
+        <Route
+          path="/vendor/apply"
+          element={<VendorApplicationPage />}
         />
       </Route>
     </Routes>

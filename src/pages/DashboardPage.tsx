@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 
+import Navbar from "../components/Navbar";
 import CategorySection from "../components/marketplace/CategorySection";
 import ProductGrid from "../components/marketplace/ProductGrid";
 import UniversitySelector from "../components/marketplace/UniversitySelector";
@@ -157,7 +158,7 @@ function ProductSection({
 }
 
 export default function DashboardPage() {
-  const { user, logout } = useAuth();
+  const { user } = useAuth();
 
   const [selectedCategory, setSelectedCategory] =
     useState<MarketplaceCategory | null>(null);
@@ -175,10 +176,6 @@ export default function DashboardPage() {
     useState<ProductOrdering>("newest");
 
   const [showFilters, setShowFilters] = useState(false);
-
-  const handleLogout = async () => {
-    await logout();
-  };
 
   const handleCategoryClick = (
     category: MarketplaceCategory,
@@ -218,27 +215,7 @@ export default function DashboardPage() {
   if (!user?.active_university) {
     return (
       <main className="min-vh-100 bg-light">
-        <nav className="navbar navbar-expand-lg bg-white border-bottom">
-          <div className="container py-2">
-            <span className="navbar-brand fw-bold mb-0">
-              UniAGORA
-            </span>
-
-            <div className="d-flex align-items-center gap-3">
-              <span className="text-muted small d-none d-sm-inline">
-                {user?.full_name}
-              </span>
-
-              <button
-                type="button"
-                className="btn btn-outline-dark btn-sm"
-                onClick={() => void handleLogout()}
-              >
-                Logout
-              </button>
-            </div>
-          </div>
-        </nav>
+        <Navbar />
 
         <section className="container py-4 py-md-5">
           <div className="row justify-content-center">
@@ -253,27 +230,7 @@ export default function DashboardPage() {
 
   return (
     <main className="min-vh-100 bg-light">
-      <nav className="navbar navbar-expand-lg bg-white border-bottom">
-        <div className="container py-2">
-          <span className="navbar-brand fw-bold mb-0">
-            UniAGORA
-          </span>
-
-          <div className="d-flex align-items-center gap-3">
-            <span className="text-muted small d-none d-sm-inline">
-              {user.full_name}
-            </span>
-
-            <button
-              type="button"
-              className="btn btn-outline-dark btn-sm"
-              onClick={() => void handleLogout()}
-            >
-              Logout
-            </button>
-          </div>
-        </div>
-      </nav>
+      <Navbar />
 
       <section className="container py-4 py-md-5">
         <div className="mb-4">
