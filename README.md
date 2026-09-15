@@ -12,7 +12,7 @@ This README documents the **current implementation state** of the UniAGORA proje
 
 **Current stage:** Active MVP development
 
-The backend is substantially ahead of the web client. The current frontend has completed the core customer marketplace and messaging experience, while several vendor, engagement, notification, and administration interfaces remain to be built.
+The backend is substantially ahead of the web client. The current frontend has completed the core customer marketplace, messaging, and vendor onboarding experience, while several vendor, engagement, notification, and administration interfaces remain to be built.
 
 ### Current milestone
 
@@ -26,7 +26,7 @@ The backend is substantially ahead of the web client. The current frontend has c
 | Contact Seller | 🟢 Complete |
 | Real-time chat | 🟢 Complete |
 | Read receipts | 🟢 Complete |
-| Vendor onboarding UI | 🔴 Not started |
+| Vendor onboarding UI | 🟢 Complete |
 | Vendor dashboard | 🔴 Not started |
 | Product management UI | 🔴 Not started |
 | Wishlist | 🔴 Not started |
@@ -75,7 +75,7 @@ Current working branch:
 
 Latest pushed frontend commit:
 
-`00089a2 feat: complete marketplace chat flow`
+`d5f619f feat: add vendor onboarding flow`
 
 ### Backend
 
@@ -120,34 +120,29 @@ src/
 ├── services/
 ├── types/
 └── utils/
-```
 
-> The original PRD lists Next.js for the web client. The current implementation uses React + Vite + TypeScript. This README intentionally documents the stack that actually exists in the repository.
+The original PRD lists Next.js for the web client. The current implementation uses React + Vite + TypeScript. This README intentionally documents the stack that actually exists in the repository.
 
-## Backend
+Backend
 
 The current backend uses:
 
-- Python
-- Django 5.2
-- Django REST Framework
-- PostgreSQL
-- SimpleJWT
-- Django Channels
-- Redis
-- Cloudinary
-- DRF Spectacular / OpenAPI
-- django-filter
-- Pillow
-- Daphne
+Python
+Django 5.2
+Django REST Framework
+PostgreSQL
+SimpleJWT
+Django Channels
+Redis
+Cloudinary
+DRF Spectacular / OpenAPI
+django-filter
+Pillow
+Daphne
 
 The backend is organized into domain applications.
 
----
-
-# 4. Backend Architecture
-
-```text
+4. Backend Architecture
 apps/
 ├── admin_dashboard/
 ├── authentication/
@@ -163,146 +158,124 @@ apps/
 ├── universities/
 ├── users/
 └── vendors/
-```
 
 The backend follows an API-first architecture.
 
 The main API prefix is:
 
-```text
 /api/v1/
-```
 
 The API uses a consistent response envelope.
 
-### Success
-
-```json
+Success
 {
   "success": true,
   "message": "",
   "data": {}
 }
-```
-
-### Failure
-
-```json
+Failure
 {
   "success": false,
   "message": "",
   "errors": {}
 }
-```
 
 Business rules belong to the backend. The frontend should consume the API rather than duplicate business logic.
 
----
-
-# 5. Current Frontend Routes
+5. Current Frontend Routes
 
 Public routes:
 
-```text
 /
  /login
  /register
  /password-reset
  /reset-password
-```
 
 Protected routes:
 
-```text
 /dashboard
 /products/:slug
 /stores/:slug
 /chat
 /chat/:id
-```
+/vendor/apply
 
-The `/chat` route is the conversations inbox and `/chat/:id` is the individual conversation.
+The /chat route is the conversations inbox and /chat/:id is the individual conversation.
 
----
+The /vendor/apply route provides the vendor onboarding/application experience.
 
-# 6. Implemented Features
-
-## Authentication
+6. Implemented Features
+Authentication
 
 Implemented:
 
-- Registration
-- Login
-- Logout
-- Forgot password
-- Password reset
-- JWT token storage
-- Token refresh handling
-- Protected routes
-- Public routes
-- Current-user loading
-- Active university API integration
+Registration
+Login
+Logout
+Forgot password
+Password reset
+JWT token storage
+Token refresh handling
+Protected routes
+Public routes
+Current-user loading
+Active university API integration
 
 Email verification and social sign-in are intentionally not part of the current MVP.
 
----
-
-## Marketplace
+Marketplace
 
 Implemented:
 
-- University selection
-- Category browsing
-- Product browsing
-- Product cards
-- Product grid
-- Product detail pages
-- Store detail pages
-- Keyword search
-- Category filtering
-- Condition filtering
-- Minimum price
-- Maximum price
-- Newest ordering
-- Lowest-price ordering
-- Highest-price ordering
-- Loading states
-- Empty states
-- Error states
+University selection
+Category browsing
+Product browsing
+Product cards
+Product grid
+Product detail pages
+Store detail pages
+Keyword search
+Category filtering
+Condition filtering
+Minimum price
+Maximum price
+Newest ordering
+Lowest-price ordering
+Highest-price ordering
+Loading states
+Empty states
+Error states
 
 The backend product API supports the corresponding search and filtering functionality.
 
----
-
-## Messaging
+Messaging
 
 The core messaging milestone is complete.
 
 Implemented:
 
-- Contact Seller
-- Conversation creation
-- Conversations inbox
-- Conversation detail
-- REST message history
-- Real-time WebSocket messaging
-- Buyer-to-vendor communication
-- Message persistence
-- WebSocket reconnect
-- Unread conversation counts
-- Read state
-- WhatsApp-style sent/read indicators
-- Live read-receipt updates
-- Loading states
-- Empty states
-- Error states
-- Completed conversation state
-
-### Chat architecture
+Contact Seller
+Conversation creation
+Conversations inbox
+Conversation detail
+REST message history
+Real-time WebSocket messaging
+Buyer-to-vendor communication
+Message persistence
+WebSocket reconnect
+Unread conversation counts
+Read state
+WhatsApp-style sent/read indicators
+Live read-receipt updates
+Loading states
+Empty states
+Error states
+Completed conversation state
+Chat architecture
 
 REST is used for:
 
-```text
 Create conversation
 List conversations
 Retrieve conversation
@@ -310,468 +283,393 @@ Load message history
 Send fallback message
 Mark conversation as read
 Complete conversation
-```
 
 WebSocket is used for real-time message delivery:
 
-```text
 ws/chat/<conversation_id>/?token=<access_token>
-```
 
 The backend uses Django Channels with Redis as the channel layer.
 
-### Development WebSocket server
+Development WebSocket server
 
 For local WebSocket testing, use Daphne/ASGI rather than Django's normal development WSGI server:
 
-```bash
 daphne -b 127.0.0.1 -p 8000 config.asgi:application
-```
+Vendor Onboarding
 
----
+The vendor onboarding milestone is now complete on the web frontend.
 
-# 7. Backend Capabilities Already Available
+Implemented:
 
-The backend currently contains domain applications and API routes for features that are not yet exposed through the web frontend.
+Become a Vendor navigation
+Vendor application route
+Student vendor application
+Business vendor application
+University selection
+Vendor type selection
+Student matric number
+Student department
+Student level
+Student verification document upload
+Business name
+Business address
+Optional business logo upload
+Phone number
+Store name
+Backend validation error handling
+Multipart form submission
+Successful application handling
+Vendor state refresh after application
+Automatic redirect to the dashboard after successful application
+Vendor-aware navigation
 
-### Vendors
+The frontend submits vendor applications through the backend vendor API and uses the active university UUID required by the backend.
 
-Includes:
+For the current MVP implementation, successful vendor applications are automatically approved by the backend.
 
-- Vendor profile
-- Vendor application/profile retrieval
-- Vendor verification states
-- Vendor suspension/reinstatement support
-- Public vendor information
+Vendor onboarding is complete, but the full vendor experience is not yet complete. Vendor dashboard, product management, inventory, image management, and listing lifecycle interfaces remain to be built.
 
-### Stores
+7. Backend Capabilities Already Available
 
-Includes:
+The backend currently contains domain applications and API routes for features that are not yet fully exposed through the web frontend.
 
-- Store retrieval
-- Store management infrastructure
-- Vendor/store relationship
-
-### Products
-
-Includes:
-
-- Product listing
-- Product retrieval
-- Product management infrastructure
-- Product image upload
-- Product image deletion
-- Primary image management
-- Product lifecycle services
-- Inventory services
-- Search/filter services
-
-### Reviews
+Vendors
 
 Includes:
 
-- Review creation
-- Review retrieval
-- Review editing
-- Store review listing
-- Conversation-based review eligibility
-
-### Reports
-
-Includes:
-
-- Report product
-- Report vendor
-- View own reports
-- Admin report management
-- Under-review
-- Resolve
-- Reject
-
-### Notifications
+Vendor profile
+Vendor application/profile retrieval
+Vendor verification states
+Vendor suspension/reinstatement support
+Public vendor information
+Stores
 
 Includes:
 
-- Notification listing
-- Unread count
-- Mark notification read
-- Mark all read
-- Device token registration
-- Device token deactivation
-
-### Admin
+Store retrieval
+Store management infrastructure
+Vendor/store relationship
+Products
 
 Includes:
 
-- Dashboard summary
-- User management
-- User activation/deactivation
-- Vendor management
-- Vendor suspension/reinstatement
-- Product moderation
-- Category management
-- Report management
+Product listing
+Product retrieval
+Product management infrastructure
+Product image upload
+Product image deletion
+Primary image management
+Product lifecycle services
+Inventory services
+Search/filter services
+Reviews
 
----
+Includes:
 
-# 8. Remaining Frontend Roadmap
+Review creation
+Review retrieval
+Review editing
+Store review listing
+Conversation-based review eligibility
+Reports
 
-## Phase 1 — Foundation
+Includes:
 
-- [x] Frontend architecture
-- [x] Authentication
-- [x] Protected/public routing
-- [x] API service layer
-- [x] Marketplace foundation
+Report product
+Report vendor
+View own reports
+Admin report management
+Under-review
+Resolve
+Reject
+Notifications
 
-## Phase 2 — Marketplace Customer Experience
+Includes:
 
-- [x] Product browsing
-- [x] Search
-- [x] Filters
-- [x] Product details
-- [x] Store details
-- [x] Contact Seller
-- [x] Conversations
-- [x] Real-time chat
-- [x] Read receipts
+Notification listing
+Unread count
+Mark notification read
+Mark all read
+Device token registration
+Device token deactivation
+Admin
 
-## Phase 3 — Vendor Experience
+Includes:
 
-- [ ] Become a Vendor
-- [ ] Vendor application
-- [ ] Vendor dashboard
-- [ ] Store management
-- [ ] Create product listing
-- [ ] Edit product listing
-- [ ] Delete product listing
-- [ ] Mark product as sold
-- [ ] Inventory management
-- [ ] Product image management
-- [ ] Listing status
-- [ ] Expired listing handling
-- [ ] Listing renewal
-- [ ] Vendor enquiries/reviews view
-
-## Phase 4 — Marketplace Engagement
-
-- [ ] Wishlist
-- [ ] Save product
-- [ ] Remove saved product
-- [ ] Store reviews
-- [ ] Write review
-- [ ] Edit review
-- [ ] Report product
-- [ ] Report vendor
-- [ ] My reports
-
-## Phase 5 — Notifications
-
-- [ ] Notification center
-- [ ] Notification unread badge
-- [ ] Mark notification read
-- [ ] Mark all notifications read
-- [ ] Device-token integration
-- [ ] Push notification UX
-
-## Phase 6 — Admin Dashboard
-
-- [ ] Admin dashboard
-- [ ] Marketplace analytics
-- [ ] User management
-- [ ] Vendor management
-- [ ] Vendor moderation
-- [ ] Product moderation
-- [ ] Category management
-- [ ] Report management
-- [ ] Admin navigation and protected access
-
-## Phase 7 — Account & UX Polish
-
-- [ ] Complete profile/account UI
-- [ ] University switching UX
-- [ ] Responsive refinement
-- [ ] Global loading states
-- [ ] Global error states
-- [ ] Accessibility review
-- [ ] UX consistency review
-
-## Phase 8 — Production
-
-- [ ] Production frontend environment
-- [ ] Production backend environment
-- [ ] PostgreSQL production configuration
-- [ ] Redis production configuration
-- [ ] Cloudinary production configuration
-- [ ] Production WebSocket configuration
-- [ ] CORS/security configuration
-- [ ] Frontend deployment
-- [ ] Backend deployment
-- [ ] Domain configuration
-- [ ] Final QA
-- [ ] Release preparation
-
----
-
-# 9. Features Intentionally Not Implemented Yet
+Dashboard summary
+User management
+User activation/deactivation
+Vendor management
+Vendor suspension/reinstatement
+Product moderation
+Category management
+Report management
+8. Remaining Frontend Roadmap
+Phase 1 — Foundation
+ Frontend architecture
+ Authentication
+ Protected/public routing
+ API service layer
+ Marketplace foundation
+Phase 2 — Marketplace Customer Experience
+ Product browsing
+ Search
+ Filters
+ Product details
+ Store details
+ Contact Seller
+ Conversations
+ Real-time chat
+ Read receipts
+Phase 3 — Vendor Experience
+ Become a Vendor
+ Vendor application
+ Vendor dashboard
+ Store management
+ Create product listing
+ Edit product listing
+ Delete product listing
+ Mark product as sold
+ Inventory management
+ Product image management
+ Listing status
+ Expired listing handling
+ Listing renewal
+ Vendor enquiries/reviews view
+Phase 4 — Marketplace Engagement
+ Wishlist
+ Save product
+ Remove saved product
+ Store reviews
+ Write review
+ Edit review
+ Report product
+ Report vendor
+ My reports
+Phase 5 — Notifications
+ Notification center
+ Notification unread badge
+ Mark notification read
+ Mark all notifications read
+ Device-token integration
+ Push notification UX
+Phase 6 — Admin Dashboard
+ Admin dashboard
+ Marketplace analytics
+ User management
+ Vendor management
+ Vendor moderation
+ Product moderation
+ Category management
+ Report management
+ Admin navigation and protected access
+Phase 7 — Account & UX Polish
+ Complete profile/account UI
+ University switching UX
+ Responsive refinement
+ Global loading states
+ Global error states
+ Accessibility review
+ UX consistency review
+Phase 8 — Production
+ Production frontend environment
+ Production backend environment
+ PostgreSQL production configuration
+ Redis production configuration
+ Cloudinary production configuration
+ Production WebSocket configuration
+ CORS/security configuration
+ Frontend deployment
+ Backend deployment
+ Domain configuration
+ Final QA
+ Release preparation
+9. Features Intentionally Not Implemented Yet
 
 The following are either future releases, optional MVP items, or outside the current scope.
 
-### Future authentication
-
-- Email verification
-- Google Sign-In
-- Apple Sign-In
-
-### Optional chat feature
-
-- Image attachments in chat
-
-### Post-MVP features
-
-- Food ordering
-- Rider management
-- Live delivery tracking
-- Wallet
-- Escrow payments
-- Service marketplace
-- Hostel listings
-- Event tickets
-- Coupons
-- AI recommendations
-- Multi-campus logistics
-
----
-
-# 10. Important Current Gaps
+Future authentication
+Email verification
+Google Sign-In
+Apple Sign-In
+Optional chat feature
+Image attachments in chat
+Post-MVP features
+Food ordering
+Rider management
+Live delivery tracking
+Wallet
+Escrow payments
+Service marketplace
+Hostel listings
+Event tickets
+Coupons
+AI recommendations
+Multi-campus logistics
+10. Important Current Gaps
 
 These should not be mistaken for backend absence.
 
 The backend already provides substantial infrastructure for:
 
-```text
 Vendors
 Products
 Reviews
 Reports
 Notifications
 Admin
-```
 
 The primary remaining work is exposing those capabilities through the frontend and completing the corresponding user flows.
 
-### Wishlist
+Wishlist
 
-A wishlist feature is required by the PRD, but there is currently no dedicated `wishlist` backend application in the supplied backend architecture.
+A wishlist feature is required by the PRD, but there is currently no dedicated wishlist backend application in the supplied backend architecture.
 
 Therefore wishlist implementation should be treated as a feature requiring backend/API verification before frontend work begins.
 
----
-
-# 11. Local Development
-
-## Frontend
+11. Local Development
+Frontend
 
 From the frontend repository:
 
-```bash
 npm install
-```
 
-Create/update `.env`:
+Create/update .env:
 
-```env
 VITE_API_BASE_URL=http://localhost:8000/api/v1
-```
 
 Start the development server:
 
-```bash
 npm run dev
-```
 
 Run lint:
 
-```bash
 npm run lint
-```
 
 Run production build:
 
-```bash
 npm run build
-```
 
 Preview production build:
 
-```bash
 npm run preview
-```
-
----
-
-## Backend
+Backend
 
 Create and activate a virtual environment:
 
-```bash
 python -m venv .venv
-```
 
 Linux/macOS:
 
-```bash
 source .venv/bin/activate
-```
 
 Windows:
 
-```powershell
 .venv\Scripts\Activate.ps1
-```
 
 Install development dependencies:
 
-```bash
 pip install -r requirements/dev.txt
-```
 
 Apply migrations:
 
-```bash
 python manage.py migrate
-```
 
 For normal HTTP development:
 
-```bash
 python manage.py runserver
-```
 
 For full HTTP + WebSocket local testing:
 
-```bash
 daphne -b 127.0.0.1 -p 8000 config.asgi:application
-```
-
----
-
-# 12. Required Backend Services
+12. Required Backend Services
 
 The backend development environment requires:
 
-### PostgreSQL
+PostgreSQL
 
 Used as the primary database.
 
-### Redis
+Redis
 
 Used by Django Channels for real-time communication.
 
 Check Redis locally:
 
-```bash
 redis-cli ping
-```
 
 Expected:
 
-```text
 PONG
-```
+Cloudinary
 
-### Redis Python compatibility
+Used for backend-managed media uploads, including vendor verification documents and vendor/business media.
+
+Cloudinary credentials must be configured through backend environment variables.
+
+Redis Python compatibility
 
 The current backend pins:
 
-```text
 channels-redis==4.3.0
 redis>=4.6,<6
-```
 
 The Redis client is intentionally constrained below version 6 because the current Channels/Redis combination encountered an idle WebSocket timeout with newer redis-py versions during local integration testing.
 
----
-
-# 13. API Documentation
+13. API Documentation
 
 The backend exposes OpenAPI documentation through:
 
-```text
 /api/schema/
 /api/docs/
 /api/redoc/
-```
 
 Swagger UI:
 
-```text
 http://localhost:8000/api/docs/
-```
 
 ReDoc:
 
-```text
 http://localhost:8000/api/redoc/
-```
-
----
-
-# 14. Git Workflow
+14. Git Workflow
 
 The project uses GitHub for version control.
 
-### Frontend
+Frontend
 
 Current development branch:
 
-```text
 feature/frontend-architecture
-```
 
 The frontend should be verified locally before pushing changes.
 
 Typical workflow:
 
-```bash
 git status
 git add .
 git commit -m "feat: description"
 git push origin feature/frontend-architecture
-```
-
-### Backend
+Backend
 
 Primary branch:
 
-```text
 main
-```
 
 Backend changes should be coordinated with the team because the backend is shared by the web and future mobile clients.
 
----
-
-# 15. Development Principles
-
-1. Inspect the existing implementation before changing it.
-2. Follow the PRD and established architecture.
-3. Do not duplicate backend business rules in the frontend.
-4. Keep API integration inside service modules.
-5. Use typed models/interfaces for API data.
-6. Keep authentication centralized.
-7. Test frontend/backend integration incrementally.
-8. Test real-time features with the actual ASGI/WebSocket stack.
-9. Avoid unnecessary backend changes when an existing API already supports the feature.
-10. Complete and verify one milestone before expanding scope.
-
----
-
-# 16. Current Milestone Summary
-
-### Completed
-
-```text
+15. Development Principles
+Inspect the existing implementation before changing it.
+Follow the PRD and established architecture.
+Do not duplicate backend business rules in the frontend.
+Keep API integration inside service modules.
+Use typed models/interfaces for API data.
+Keep authentication centralized.
+Test frontend/backend integration incrementally.
+Test real-time features with the actual ASGI/WebSocket stack.
+Avoid unnecessary backend changes when an existing API already supports the feature.
+Complete and verify one milestone before expanding scope.
+16. Current Milestone Summary
+Completed
 Frontend Foundation
         ↓
 Authentication
@@ -787,27 +685,21 @@ Conversations Inbox
 Real-Time Chat
         ↓
 Read Receipts
-```
-
-### Next major milestone
-
-```text
-Vendor Experience
         ↓
-Vendor Application
-        ↓
+Vendor Onboarding
+Next major milestone
 Vendor Dashboard
+        ↓
+Store Management
         ↓
 Product Management
         ↓
 Inventory & Images
         ↓
 Listing Lifecycle
-```
 
 After that:
 
-```text
 Wishlist / Reviews / Reports
         ↓
 Notifications
@@ -815,32 +707,22 @@ Notifications
 Admin Dashboard
         ↓
 Final UX + Production
-```
-
----
-
-# 17. Source Documents
+17. Source Documents
 
 The backend repository currently contains the project's primary documentation:
 
-```text
 docs/
 ├── UniAGORA Backend responsibility (1).md
 ├── UniAGORA Product Requirements Document (PRD).txt
 ├── UniAGORA_Backend_Architecture_FINAL.md
 └── UniAGORA_Database_Design_Specification_v1.0.md
-```
 
 These documents should be treated as the primary reference when making architectural or product-scope decisions.
 
----
-
-# 18. License
+18. License
 
 License information has not yet been finalized.
 
----
+UniAGORA
 
-# UniAGORA
-
-**Build the trusted campus marketplace.**
+Build the trusted campus marketplace.
